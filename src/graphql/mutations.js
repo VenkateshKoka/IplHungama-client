@@ -1,5 +1,5 @@
 import {gql} from "apollo-boost";
-import {USER_INFO, POST_DATA} from "./fragments";
+import {USER_INFO, POST_DATA, SERIES_DATA} from "./fragments";
 
 export const USER_UPDATE = gql`   
     mutation userUpdate($input: UserUpdateInput) {
@@ -26,6 +26,15 @@ export const POST_CREATE = gql`
         }
     }
     ${POST_DATA}
+`;
+
+export const SERIES_CREATE = gql`
+    mutation seriesCreate($input: SeriesCreateInput!) {
+        seriesCreate(input: $input) {
+            ...seriesData
+        }
+    }
+    ${SERIES_DATA}
 `;
 
 export const POST_UPDATE = gql`

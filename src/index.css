@@ -1,3 +1,19 @@
 .activePagination {
     background-color: lightslategray;
 }
+
+.teamName {
+    border-radius: 2rem;
+    justify-content: space-evenly;
+    background-image: radial-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.05));
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 3px 0 rgba(0, 0, 0, 0.19);
+}
+.teamName a {
+    color: #212529;
+}
+
+.teamName:hover {
+    color: blue;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    /*box-shadow: 5px 5px 2px #888888;*/
+}

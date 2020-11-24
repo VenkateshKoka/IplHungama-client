@@ -30,3 +30,23 @@ export const POST_DATA = gql`
         }
     }
 `;
+
+export const SERIES_DATA = gql`
+    fragment seriesData on Series {
+        _id
+        id
+        series {
+            start_date
+            end_date
+            name
+            series_category
+            id
+        }
+        tabs {
+            id
+            header
+            url
+            default
+        }
+    }
+`;

@@ -33,6 +33,11 @@ import Profile from "./pages/auth/Profile";
 import PasswordForgot from "./pages/auth/PasswwordForgot";
 import SingleUser from "./pages/SingleUser";
 import SearchResults from "./components/SearchResults";
+import Match from "./pages/match/Match";
+import Series from "./pages/series/Series";
+import Team from "./pages/team/Team";
+import Teams from "./pages/series/Teams";
+import SeriesRoute from "./components/SeriesRoute";
 
 
 const App = () => {
@@ -106,13 +111,17 @@ const App = () => {
                   <PublicRoute exact path="/login" component={Login}/>
                   <PublicRoute exact path="/complete-registration" component={CompleteRegistration}/>
                   <Route exact path="/password/forgot" component={PasswordForgot}/>
-                  <PrivateRoute exact path="/password/update" component={PasswordUpdate}/>
+                  <Route exact path="/password/update" component={PasswordUpdate}/>
                   <PrivateRoute exact path="/profile" component={Profile}/>
                   <PrivateRoute exact path="/post/create" component={Post}/>
                   <PrivateRoute exact path="/post/update/:postid" component={PostUpdate}/>
                   <Route exact path="/post/:postid" component={SinglePost}/>
                   <Route exact path="/search/:query" component={SearchResults}/>
                   <Route exact path="/user/:username" component={SingleUser}/>
+                  <Route exact path="/cbzios/match/:matchid" component={Match}/>
+                  <SeriesRoute exact path="/cbzios/series/:seriesid" component={Series}/>
+                  <SeriesRoute exact path="/cbzios/series/:seriesid/teams" component={Teams}/>
+                  <Route exact path="/cbzios/series/:seriesid/teams/:teamid" component={Team}/>
               </Switch>
           </Switch>
       </ApolloProvider>

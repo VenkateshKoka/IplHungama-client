@@ -1,4 +1,4 @@
-import React, { useState, useContext} from 'react';
+import React, { useState, useContext, useEffect} from 'react';
 import ApolloClient from 'apollo-boost';
 import { gql } from 'apollo-boost';
 import { useQuery, useLazyQuery, useSubscription } from '@apollo/react-hooks';
@@ -9,6 +9,8 @@ import PostCard from "../components/PostCard";
 import PostPagination from "../components/PostPagination";
 import {toast} from "react-toastify";
 import {POST_ADDED, POST_UPDATED, POST_DELETED} from "../graphql/subscriptions";
+import axios from 'axios';
+import {Link} from "react-router-dom";
 
 const Home = () => {
 
@@ -83,9 +85,6 @@ const Home = () => {
     });
 
 
-
-
-
     const [fetchPosts, {data: posts}] = useLazyQuery(GET_ALL_POSTS);
     const updateUserName = () => {
         dispatch({
@@ -100,28 +99,118 @@ const Home = () => {
     // react router
     let history = useHistory();
 
+    const [iplData, setIplData] = useState({});
+    const [liveMatchesData, setLiveMatchesData] = useState({});
+    const [rapidMatchesData, setRapidMatchesData] = useState({});
+
+    const fetchIplMatches1 = async () => {
+        // const response = await axios({
+        //     "method":"GET",
+        //     "url":"https://mapps.cricbuzz.com/cbzios/match/schedule",
+        // });
+        const response = await axios.get(`${process.env.REACT_APP_REST_ENDPOINT}/cbzios/match/schedule`)
+        if(response) {
+            console.log(response.data);
+            setIplData(response.data)
+        }
+        // .then((response)=>{
+        //     setIpldata(response.data);
+        //     console.log(response)
+        // })
+        // .catch((error)=>{
+        //     console.log(error)
+        // })
+    }
+
+    const fetchLiveMatches = async () => {
+        await axios.get(`${process.env.REACT_APP_REST_ENDPOINT}/cbzios/match/livematches`)
+            .then((response) => {
+            setLiveMatchesData(response.data);
+            console.log(response)
+            })
+            .catch((error) => {
+            console.log(error)
+            })
+    }
+
+    const fetchRapidIplMatches = async () => {
+        await axios.get(`${process.env.REACT_APP_REST_ENDPOINT}/rapidapi/matchSeries`)
+            .then((response) => {
+                setRapidMatchesData(response.data);
+                console.log("rapid ipl matches",response.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+            // .then((response)=>{
+            //     setIpldata(response.data);
+            //     console.log(response)
+            // })
+            // .catch((error)=>{
+            //     console.log(error)
+            // })
+    }
+
+    useEffect(() => {
+        fetchLiveMatches()
+    }, []);
+
+
     if(loading) return <p className="p-5">Loading....</p>;
+
 
     return (
         <div className="container">
-            <div className="row p-5">
-                {data && data.allPosts.map(post => (
-                    <div key={post._id} className="col-md-4 pt-5">
-                        <PostCard post={post}/>
+            {/*<div className="row p-5">*/}
+            {/*    {data && data.allPosts.map(post => (*/}
+            {/*        <div key={post._id} className="col-md-4 pt-5">*/}
+            {/*            <PostCard post={post}/>*/}
+            {/*        </div>*/}
+            {/*    ))}*/}
+            {/*</div>*/}
+
+            {/*<PostPagination page={page} postCount={postCount} setPage={setPage} />*/}
+
+            <button onClick={()=> fetchRapidIplMatches()} className="btn-btn-raise btn-primary mt-5"> Fetch Ipl Matches</button>
+            <button onClick={()=> fetchLiveMatches()} className="btn-btn-raise btn-primary mt-5"> Fetch Live Matches</button>
+            <hr/>
+            {iplData.matches && iplData.matches.map(match => {
+                return (
+                    <Link key={match.match_id} to={`/match/${match.match_id}`}>
+                        <b>{match.series_name}</b>: {match.team1_name} vs {match.team2_name} at {match.venue.name}<br/>
+                        {match.header.state==='complete' && match.header.status || 'Upcoming'}
+                    </Link>
+                )
+            })}
+            {liveMatchesData.matches && liveMatchesData.matches.map(match => {
+                return (
+                    <div key={match.match_id}>
+                        <Link
+                            to={`/cbzios/series/${match.series_id}`}
+                            style={{ textDecoration: 'none'}}>
+                            {match.series_name}
+                        </Link>
+                        <Link to={`/cbzios/match/${match.match_id}`} style={{ textDecoration: 'none', color: 'black'}}>
+                            <br/>
+                            {match.team1.name} vs {match.team2.name} at {match.venue.name}<br/>
+                            {match.header.status} , matchId: {match.match_id}
+                        </Link>
                     </div>
-                ))}
+                )
+            })}
+            <div className="container">
+                {rapidMatchesData.matchList && rapidMatchesData.matchList.matches
+                    .sort((a, b) => a.id > b.id ? 1 : -1)
+                    .map(match => {
+                    return (
+                        <div className="container-row">
+                            <Link key={match.id} to={`/rapidapi/match/${match.id}`}>
+                                {match.status}: matchId: {match.id}, status: {match.status} at {match.venue.name}
+                            </Link>
+                        </div>
+                    )
+                })}
             </div>
-
-            <PostPagination page={page} postCount={postCount} setPage={setPage} />
-
-            <button onClick={()=> fetchPosts()} className="btn-btn-raise btn-primary"> Fetch Posts</button>
-            <hr/>
-            {/*{JSON.stringify(newPost)}*/}
-            {/*<hr/>*/}
-            {/*{JSON.stringify(state.user)}*/}
-            {/*<hr/>*/}
-            {/*{JSON.stringify(history)}*/}
-            <hr/>
             <button className="btn btn-primary" onClick={updateUserName}> change user name</button>
         </div>
     );

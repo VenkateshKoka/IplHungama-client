@@ -1,4 +1,4 @@
-import {USER_INFO, POST_DATA} from "./fragments";
+import {USER_INFO, POST_DATA, SERIES_DATA} from "./fragments";
 import {gql} from "apollo-boost";
 
 export const PROFILE = gql`
@@ -59,5 +59,14 @@ export const POSTS_BY_USER = gql`
         }
     }
     ${POST_DATA}
+`;
+
+export const SERIES_DETAILS = gql`
+    query seriesDetails ($seriesId: String!){
+        seriesDetails(seriesId: $seriesId) {
+            ...seriesData
+        }
+    }
+    ${SERIES_DATA}
 `;
 
